@@ -1,0 +1,9 @@
+customer_id,first_name,last_name,email,company,city,country,signup_date,account_balance
+1001,Alexander,Wright,alex.wright@apextech.io,ApexTech,New York,United States,2026-01-15,4820.50
+1002,Sophia,Chen,sophia.chen@biomarine.org,BioMarine,San Francisco,United States,2026-02-03,12450.00
+1003,Marcus,Vance,marcus.v@novalabs.co,NovaLabs,London,United Kingdom,2026-02-18,3100.75
+1004,Elena,Rostova,elena.rostova@quantumsoft.de,QuantumSoft,Berlin,Germany,2026-03-01,9800.20
+1005,Tariq,Mansour,tariq@skylineai.ae,Skyline AI,Dubai,United Arab Emirates,2026-03-12,18500.00
+1006,Isabella,Rossi,i.rossi@milanodesign.it,MilanoDesign,Milan,Italy,2026-03-22,6230.10
+1007,Kenji,Sato,kenji.sato@tokyocore.jp,TokyoCore,Tokyo,Japan,2026-04-05,14200.80
+1008,Amara,Okafor,amara@lagostech.ng,LagosTech,Lagos,Nigeria,2026-04-14,5700.00

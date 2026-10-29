@@ -1,0 +1,50 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DynamoDBUserTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/RiteClick_Users",
+        "arn:aws:dynamodb:*:*:table/RiteClick_Users/index/*"
+      ]
+    },
+    {
+      "Sid": "SourceS3UploadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::riteclick-source-bucket/*"
+    },
+    {
+      "Sid": "TargetS3ReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::riteclick-target-bucket",
+        "arn:aws:s3:::riteclick-target-bucket/*"
+      ]
+    },
+    {
+      "Sid": "GlueJobStatusMonitoring",
+      "Effect": "Allow",
+      "Action": [
+        "glue:GetJobRun",
+        "glue:GetJobRuns"
+      ],
+      "Resource": "arn:aws:glue:*:*:job/riteclick-csv-to-json-job"
+    }
+  ]
+}

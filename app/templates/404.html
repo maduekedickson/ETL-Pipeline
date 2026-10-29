@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - RiteClick{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 5rem 1rem;">
+  <div style="font-size: 5rem; font-weight: 800; color: var(--primary); line-height: 1;">404</div>
+  <h1 style="color: #fff; font-size: 1.8rem; margin: 1rem 0;">Object or Page Not Found</h1>
+  <p style="color: var(--text-muted); max-width: 450px; margin: 0 auto 2rem;">
+    The page or S3 data key you requested cannot be located.
+  </p>
+  <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Safety</a>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - RiteClick{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 5rem 1rem;">
+  <div style="font-size: 5rem; font-weight: 800; color: var(--danger); line-height: 1;">500</div>
+  <h1 style="color: #fff; font-size: 1.8rem; margin: 1rem 0;">Server Encountered an Error</h1>
+  <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem;">
+    An internal error occurred while communicating with AWS services. Please verify your IAM roles, S3 bucket names, and DynamoDB configuration.
+  </p>
+  <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

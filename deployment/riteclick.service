@@ -1,0 +1,23 @@
+[Unit]
+Description=Gunicorn daemon for RiteClick Cloud ETL Web Application
+After=network.target
+
+[Service]
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/opt/riteclick
+Environment="PATH=/opt/riteclick/venv/bin"
+EnvironmentFile=/opt/riteclick/.env
+ExecStart=/opt/riteclick/venv/bin/gunicorn \
+          --workers 4 \
+          --bind 127.0.0.1:5000 \
+          --timeout 120 \
+          --access-logfile /var/log/riteclick/access.log \
+          --error-logfile /var/log/riteclick/error.log \
+          run:app
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

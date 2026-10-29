@@ -1,0 +1,40 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CloudWatchLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Sid": "SourceS3ReadAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::riteclick-source-bucket/*"
+    },
+    {
+      "Sid": "StartGlueJobAccess",
+      "Effect": "Allow",
+      "Action": [
+        "glue:StartJobRun",
+        "glue:GetJobRun"
+      ],
+      "Resource": "arn:aws:glue:*:*:job/riteclick-csv-to-json-job"
+    },
+    {
+      "Sid": "PublishSNSTopic",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:sns:*:*:riteclick-etl-notifications"
+    }
+  ]
+}

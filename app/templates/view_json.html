@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}View JSON: {{ filename }} - RiteClick{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+        <a href="{{ url_for('main.processed') }}" style="color: var(--text-dim); text-decoration: none; font-size: 0.85rem;">
+          &larr; Back to Processed Files
+        </a>
+      </div>
+      <h1 style="font-size: 1.6rem; font-weight: 800; color: #fff; word-break: break-all;">
+        {{ filename }}
+      </h1>
+      <p style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
+        s3://{{ config.TARGET_S3_BUCKET }}/{{ file_key }}
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <button class="btn btn-secondary btn-copy" data-target="raw-json-block">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        Copy Content
+      </button>
+      <a href="{{ url_for('main.download_json', file_key=file_key) }}" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download JSON File
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Strip -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+  <div class="card" style="padding: 1rem 1.25rem; margin-bottom: 0;">
+    <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Records Ingested</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">{{ record_count }}</div>
+  </div>
+  <div class="card" style="padding: 1rem 1.25rem; margin-bottom: 0;">
+    <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Payload Size</div>
+    <div style="font-size: 1.5rem; font-weight: 700; color: #fff; font-family: var(--font-mono);">
+      {{ raw_text|length }} chars
+    </div>
+  </div>
+  <div class="card" style="padding: 1rem 1.25rem; margin-bottom: 0;">
+    <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">ETL Engine</div>
+    <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;">AWS Glue PySpark</div>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="card">
+  <div style="display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
+    <button class="btn btn-sm btn-secondary tab-btn active" data-tab="tab-formatted">
+      Formatted View
+    </button>
+    <button class="btn btn-sm btn-secondary tab-btn" data-tab="tab-raw">
+      Raw JSON Text
+    </button>
+  </div>
+
+  <!-- Tab 1: Formatted Pretty Display -->
+  <div id="tab-formatted" class="tab-pane">
+    {% if parsed_data is iterable and parsed_data is not string and parsed_data is not mapping %}
+      <div style="margin-bottom: 1rem; font-size: 0.88rem; color: var(--text-muted);">
+        Displaying list of <strong>{{ parsed_data|length }}</strong> converted records:
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.85rem; max-height: 700px; overflow-y: auto; padding-right: 0.5rem;">
+        {% for item in parsed_data %}
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: var(--secondary); font-weight: 600; margin-bottom: 0.5rem; font-family: var(--font-mono);">
+              Record #{{ loop.index }}
+            </div>
+            <pre style="margin: 0; font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0; white-space: pre-wrap; word-break: break-all;">{{ item | tojson(indent=2) }}</pre>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <pre class="json-container"><code id="formatted-json">{{ raw_text }}</code></pre>
+    {% endif %}
+  </div>
+
+  <!-- Tab 2: Raw Code Container -->
+  <div id="tab-raw" class="tab-pane" style="display: none;">
+    <pre class="json-container"><code id="raw-json-block">{{ raw_text }}</code></pre>
+  </div>
+</div>
+{% endblock %}

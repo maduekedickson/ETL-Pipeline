@@ -1,0 +1,11 @@
+data_local/
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
+.aws/
+*.pem
+.vscode/
+.idea/
+*.log

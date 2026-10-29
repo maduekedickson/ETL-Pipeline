@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}File Too Large - RiteClick{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 5rem 1rem;">
+  <div style="font-size: 5rem; font-weight: 800; color: var(--warning); line-height: 1;">413</div>
+  <h1 style="color: #fff; font-size: 1.8rem; margin: 1rem 0;">Payload Too Large</h1>
+  <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem;">
+    The uploaded CSV file exceeds the 100MB limit. Please compress or partition the dataset.
+  </p>
+  <a href="{{ url_for('main.upload') }}" class="btn btn-primary">Try Another File</a>
+</div>
+{% endblock %}

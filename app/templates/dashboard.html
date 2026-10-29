@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - RiteClick Data Platform{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #fff;">ETL Overview Dashboard</h1>
+    <p style="color: var(--text-muted); font-size: 0.92rem;">
+      Welcome back, <strong>{{ user.username }}</strong>. Real-time status of your automated data pipeline.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="{{ url_for('main.upload') }}" class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      Upload New CSV
+    </a>
+    <a href="{{ url_for('main.processed') }}" class="btn btn-secondary">
+      Browse Target Files
+    </a>
+  </div>
+</div>
+
+<!-- Metric Stat Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+  <div class="card" style="margin-bottom: 0;">
+    <div style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.35rem;">
+      Total Processed JSON Files
+    </div>
+    <div style="font-size: 2.2rem; font-weight: 800; color: var(--secondary);">
+      {{ total_files }}
+    </div>
+    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+      Stored in Target S3
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.35rem;">
+      Source S3 Ingestion Bucket
+    </div>
+    <div style="font-size: 1rem; font-weight: 700; color: #fff; word-break: break-all;">
+      {{ config.SOURCE_S3_BUCKET }}
+    </div>
+    <div style="font-size: 0.8rem; color: var(--primary); margin-top: 0.25rem;">
+      Trigger: Lambda & SNS
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.35rem;">
+      Target S3 Destination Bucket
+    </div>
+    <div style="font-size: 1rem; font-weight: 700; color: #fff; word-break: break-all;">
+      {{ config.TARGET_S3_BUCKET }}
+    </div>
+    <div style="font-size: 0.8rem; color: var(--success); margin-top: 0.25rem;">
+      Output: Converted JSON
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.35rem;">
+      AWS Glue ETL Job
+    </div>
+    <div style="font-size: 1rem; font-weight: 700; color: #fff; word-break: break-all;">
+      {{ config.GLUE_JOB_NAME }}
+    </div>
+    <div style="font-size: 0.8rem; color: #a5b4fc; margin-top: 0.25rem;">
+      PySpark CSV → JSON Engine
+    </div>
+  </div>
+</div>
+
+<!-- Recent Files & Glue Execution Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem;">
+  
+  <!-- Recent Processed Files -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Recent Converted Files
+      </div>
+      <a href="{{ url_for('main.processed') }}" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">
+        View All &rarr;
+      </a>
+    </div>
+
+    {% if recent_files %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Size</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for file in recent_files %}
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #fff;">{{ file.filename }}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-dim);">{{ file.last_modified_str }}</div>
+                </td>
+                <td style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem;">
+                  {{ file.size_formatted }}
+                </td>
+                <td>
+                  <a href="{{ url_for('main.view_json', file_key=file.key) }}" class="btn btn-secondary btn-sm">
+                    View JSON
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-dim);">
+        <p style="margin-bottom: 1rem;">No converted JSON files found in the target S3 bucket yet.</p>
+        <a href="{{ url_for('main.upload') }}" class="btn btn-primary btn-sm">Upload Your First CSV</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- AWS Glue Execution Monitoring -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        AWS Glue Job Execution Runs
+      </div>
+      <span class="badge badge-info">Auto Monitored</span>
+    </div>
+
+    {% if glue_runs %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Run ID</th>
+              <th>Status</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for run in glue_runs %}
+              <tr>
+                <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+                  {{ run.id[:16] }}...
+                </td>
+                <td>
+                  {% if run.status == 'SUCCEEDED' %}
+                    <span class="badge badge-success">SUCCEEDED</span>
+                  {% elif run.status == 'RUNNING' %}
+                    <span class="badge badge-warning">RUNNING</span>
+                  {% elif run.status == 'FAILED' %}
+                    <span class="badge badge-danger">FAILED</span>
+                  {% else %}
+                    <span class="badge badge-info">{{ run.status }}</span>
+                  {% endif %}
+                </td>
+                <td style="font-size: 0.85rem; color: var(--text-dim);">
+                  {{ run.execution_time }}s
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="padding: 1.5rem 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+        <p style="margin-bottom: 0.5rem;">
+          When an uploaded CSV file lands in <code>{{ config.SOURCE_S3_BUCKET }}</code>:
+        </p>
+        <ul style="padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-dim); line-height: 1.8;">
+          <li>S3 triggers Lambda function <code>RiteClick_Trigger_Glue_ETL</code></li>
+          <li>Lambda invokes Glue PySpark Job <code>{{ config.GLUE_JOB_NAME }}</code></li>
+          <li>Lambda publishes an alert to your SNS topic <code>{{ config.SNS_TOPIC_ARN.split(':')[-1] or 'Configured' }}</code></li>
+          <li>Processed JSON output is automatically placed in <code>{{ config.TARGET_S3_BUCKET }}</code></li>
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Processed Files - RiteClick Data Platform{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #fff;">Processed JSON Datasets</h1>
+    <p style="color: var(--text-muted); font-size: 0.92rem;">
+      Files converted from CSV to JSON by AWS Glue, residing in <code>{{ target_bucket }}</code>.
+    </p>
+  </div>
+  <div>
+    <a href="{{ url_for('main.upload') }}" class="btn btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+      Upload Another CSV
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 400px;">
+      <input 
+        type="text" 
+        id="table-search-input" 
+        class="form-control" 
+        placeholder="Filter datasets by name..."
+        style="padding: 0.6rem 0.85rem;"
+      >
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-dim);">
+      Showing <strong>{{ files|length }}</strong> converted objects
+    </div>
+  </div>
+
+  {% if files %}
+    <div class="table-responsive">
+      <table class="table searchable-table">
+        <thead>
+          <tr>
+            <th>Target S3 File</th>
+            <th>Full Path Key</th>
+            <th>Size</th>
+            <th>Processed Timestamp</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+            <tr>
+              <td>
+                <div style="font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                  {{ file.filename }}
+                </div>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ file.key }}
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+                {{ file.size_formatted }}
+              </td>
+              <td style="font-size: 0.85rem; color: var(--text-muted);">
+                {{ file.last_modified_str }}
+              </td>
+              <td style="text-align: right;">
+                <div style="display: inline-flex; gap: 0.5rem;">
+                  <a href="{{ url_for('main.view_json', file_key=file.key) }}" class="btn btn-secondary btn-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Inspect
+                  </a>
+                  <a href="{{ url_for('main.download_json', file_key=file.key) }}" class="btn btn-primary btn-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 4rem 1.5rem; color: var(--text-dim);">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="margin-bottom: 1rem; opacity: 0.4;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+      <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 0.5rem;">No Converted Datasets Yet</h3>
+      <p style="max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.9rem;">
+        Once you upload CSV files to the Source S3 bucket, AWS Glue transforms them into JSON and stores them here.
+      </p>
+      <a href="{{ url_for('main.upload') }}" class="btn btn-primary">Upload a CSV File</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Upload CSV - RiteClick Data Platform{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div style="margin-bottom: 1.75rem;">
+    <h1 style="font-size: 1.8rem; font-weight: 800; color: #fff;">Upload CSV Dataset</h1>
+    <p style="color: var(--text-muted); font-size: 0.92rem;">
+      Upload raw CSV files to start the automated serverless ETL conversion to JSON.
+    </p>
+  </div>
+
+  <div class="card">
+    <form method="POST" action="{{ url_for('main.upload') }}" enctype="multipart/form-data">
+      <div class="dropzone" id="dropzone">
+        <input type="file" name="file" id="file-input" class="file-input" accept=".csv" required>
+        <div class="dropzone-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+        <div class="dropzone-text">Choose a CSV file or drag & drop it here</div>
+        <div class="dropzone-subtext">Supports standard comma-separated tabular datasets (.csv up to 100MB)</div>
+      </div>
+
+      <!-- File Selected Preview -->
+      <div id="file-preview" class="selected-file-preview">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <div>
+            <div id="file-name" style="font-weight: 600; color: #fff;"></div>
+            <div id="file-size" style="font-size: 0.8rem; color: var(--text-dim);"></div>
+          </div>
+        </div>
+        <span class="badge badge-success">Ready to Upload</span>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" id="submit-upload-btn" class="btn btn-primary" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          Ingest & Process File
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Ingestion Details & S3 Event Trigger Info -->
+  <div class="card" style="border-left: 4px solid var(--secondary);">
+    <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem;">
+      Ingestion & Pipeline Specifications
+    </h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; font-size: 0.88rem; color: var(--text-muted);">
+      <div>
+        <strong style="color: #fff; display: block;">Destination S3 Bucket:</strong>
+        <code style="color: var(--secondary);">{{ bucket }}</code>
+      </div>
+      <div>
+        <strong style="color: #fff; display: block;">Event Pipeline:</strong>
+        <span>S3 ObjectCreated &rarr; Lambda &rarr; Glue</span>
+      </div>
+      <div>
+        <strong style="color: #fff; display: block;">Email Notifications:</strong>
+        <span>Real-time SNS broadcast to subscribers</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
